@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이용우 의원 의정지원</title>
+<style>
+:root{--pri:#1B3A5C;--sec:#2E75B6;--acc:#4472C4;--lbg:#E8EFF7;--lbg2:#F2F7FC;--dk:#1A1A1A;--gr:#666;--wh:#fff;--bd:#D0D8E0;--green:#0F6E56;--green-bg:#E1F5EE;--amber:#854F0B;--amber-bg:#FAEEDA;--red:#A32D2D;--red-bg:#FCEBEB;--purple:#534AB7;--purple-bg:#EEEDFE}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Malgun Gothic','맑은 고딕','Segoe UI',sans-serif;background:#F4F6F8;color:var(--dk);line-height:1.6}
+.top-bar{background:var(--pri);color:var(--wh);padding:0 32px;height:48px;display:flex;align-items:center;justify-content:space-between}
+.top-bar h1{font-size:15px;font-weight:500;letter-spacing:.5px}
+.top-bar .period{font-size:11px;opacity:0.6;font-weight:400;margin-left:12px}
+.top-right{display:flex;align-items:center;gap:12px}
+.edit-toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--wh);cursor:pointer}
+.edit-toggle input{display:none}
+.toggle-track{width:36px;height:20px;background:rgba(255,255,255,.3);border-radius:10px;position:relative;transition:.3s}
+.toggle-track::after{content:'';position:absolute;left:2px;top:2px;width:16px;height:16px;background:var(--wh);border-radius:50%;transition:.3s}
+.edit-toggle input:checked+.toggle-track{background:#4CAF50}
+.edit-toggle input:checked+.toggle-track::after{left:18px}
+.reset-btn{background:rgba(255,255,255,.15);color:var(--wh);border:1px solid rgba(255,255,255,.3);padding:3px 10px;border-radius:5px;font-size:11px;cursor:pointer;display:none}
+.reset-btn:hover{background:rgba(255,255,255,.25)}
+body.edit-mode .reset-btn{display:inline-block}
+.header{background:var(--wh);border-bottom:1px solid var(--bd);padding:20px 32px;display:flex;align-items:center;gap:16px}
+.avatar{width:52px;height:52px;border-radius:50%;background:var(--sec);color:var(--wh);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600;flex-shrink:0;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.header-info h2{font-size:20px;font-weight:600;color:var(--pri)}
+.header-info .header-sub{font-size:13px;color:var(--gr);margin-top:2px}
+.header-info .header-msg{font-size:12px;color:var(--sec);margin-top:4px;font-weight:400}
+.tabs{background:var(--wh);border-bottom:2px solid #E0E4E8;padding:0 32px;display:flex;gap:0;overflow-x:auto}
+.tab{padding:12px 18px;font-size:13px;font-weight:500;color:var(--gr);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .2s;letter-spacing:.3px}
+.tab:hover{color:var(--sec)}
+.tab.active{color:var(--sec);border-bottom-color:var(--sec);font-weight:600}
+.content{max-width:960px;margin:0 auto;padding:24px 32px}
+.panel{display:none}
+.panel.active{display:block}
+.metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.metric{background:var(--wh);border-radius:10px;padding:14px 18px;border:1px solid var(--bd)}
+.metric-label{font-size:11px;color:var(--gr);margin-bottom:4px}
+.metric-val{font-size:22px;font-weight:700;color:var(--pri)}
+.metric-val span{font-size:13px;font-weight:400;color:var(--gr)}
+.card{background:var(--wh);border-radius:10px;border:1px solid var(--bd);padding:20px;margin-bottom:12px;position:relative;transition:border-color .2s}
+.card-title{font-size:14px;font-weight:600;color:var(--pri);margin-bottom:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card-body{font-size:13px;color:#444;line-height:1.7}
+.section-title{font-size:16px;font-weight:600;color:var(--pri);margin:24px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--sec)}
+.section-title:first-child{margin-top:0}
+.sub-title{font-size:14px;font-weight:600;color:var(--sec);margin:16px 0 8px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;cursor:pointer;user-select:none;transition:all .15s;flex-shrink:0}
+.badge-plan{background:#E8EFF7;color:var(--acc)}
+.badge-prog{background:var(--amber-bg);color:var(--amber)}
+.badge-done{background:var(--green-bg);color:var(--green)}
+.badge:hover{transform:scale(1.05);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.tbl th{background:var(--pri);color:var(--wh);padding:10px 12px;text-align:left;font-weight:500;font-size:12px}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--bd)}
+.tbl tr:nth-child(even){background:var(--lbg2)}
+.tbl tr:hover{background:var(--lbg)}
+.tbl .divider-row td{background:var(--lbg);text-align:center;font-weight:600;color:var(--sec);padding:8px}
+ul.bl{list-style:none;padding-left:0;margin:4px 0}
+ul.bl li{padding:3px 0 3px 18px;position:relative;font-size:13px;color:#444}
+ul.bl li::before{content:'';position:absolute;left:0;width:6px;height:6px;background:var(--acc);border-radius:50%;top:10px}
+.prof-tbl{width:100%;border-collapse:collapse;margin-top:8px}
+.prof-tbl th{background:var(--pri);color:var(--wh);padding:10px 14px;text-align:center;font-weight:500;width:130px;font-size:12px}
+.prof-tbl td{padding:10px 14px;border:1px solid var(--bd);font-size:13px}
+.prog-bar{height:14px;background:#E0E4E8;border-radius:7px;overflow:hidden;margin:8px 0 4px}
+.prog-fill{height:100%;background:var(--sec);border-radius:7px;transition:width .5s}
+.prog-text{font-size:12px;color:var(--gr)}
+.next-alert{background:linear-gradient(135deg,var(--lbg),var(--lbg2));border:1px solid var(--acc);border-radius:10px;padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:12px;border-left:4px solid var(--sec)}
+.next-alert .text{font-size:13px;color:var(--pri)}
+.next-alert .text strong{color:var(--sec)}
+/* Edit mode */
+.grip{display:none;color:var(--gr);cursor:grab;font-size:18px;padding:0 4px;flex-shrink:0;user-select:none}
+.grip:active{cursor:grabbing}
+body.edit-mode .grip{display:inline-block}
+.del-btn{display:none;position:absolute;top:8px;right:8px;background:var(--red-bg);color:var(--red);border:none;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;line-height:28px;text-align:center}
+.del-btn:hover{background:var(--red);color:var(--wh)}
+body.edit-mode .del-btn{display:block}
+.add-btn{display:none;border:2px dashed var(--acc);background:transparent;color:var(--acc);padding:12px;border-radius:10px;width:100%;cursor:pointer;font-size:13px;font-weight:600;margin:8px 0 16px;transition:all .2s}
+.add-btn:hover{background:var(--lbg);border-color:var(--sec)}
+body.edit-mode .add-btn{display:block}
+body.edit-mode .card{cursor:default}
+body.edit-mode .card.dragging{opacity:.4;border:2px dashed var(--acc)}
+body.edit-mode .card.drag-over{border-top:3px solid var(--sec)}
+[contenteditable=true]{outline:none;border-bottom:1px dashed var(--acc);padding:0 2px;min-width:20px}
+[contenteditable=true]:focus{background:var(--lbg2);border-bottom-color:var(--sec)}
+body.edit-mode .tbl td[contenteditable]{border-bottom:1px dashed var(--acc)}
+.tbl .add-row-btn{display:none;background:transparent;border:2px dashed var(--acc);color:var(--acc);padding:8px;width:100%;cursor:pointer;font-size:12px;font-weight:600}
+body.edit-mode .tbl .add-row-btn{display:block}
+.tbl .del-cell{display:none;color:var(--red);cursor:pointer;font-size:14px;text-align:center}
+body.edit-mode .tbl .del-cell{display:table-cell}
+.tbl .grip-cell{display:none;cursor:grab;color:var(--gr);font-size:14px;text-align:center}
+body.edit-mode .tbl .grip-cell{display:table-cell}
+/* Calendar */
+.cal-wrap{margin-bottom:24px}
+.cal-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:12px}
+.cal-nav button{background:var(--wh);border:1px solid var(--bd);border-radius:6px;width:32px;height:32px;cursor:pointer;font-size:16px;color:var(--pri);display:flex;align-items:center;justify-content:center}
+.cal-nav button:hover{background:var(--lbg)}
+.cal-nav .cal-month{font-size:16px;font-weight:600;color:var(--pri);min-width:120px;text-align:center}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:var(--wh)}
+.cal-hdr{background:var(--pri);color:var(--wh);text-align:center;font-size:12px;font-weight:500;padding:8px 4px}
+.cal-hdr.sun{color:#FFA8A8}.cal-hdr.sat{color:#A8D1FF}
+.cal-cell{min-height:80px;border:1px solid #EEE;padding:4px;vertical-align:top;position:relative;font-size:12px}
+.cal-cell.other{background:#FAFAFA;color:#CCC}
+.cal-cell.today{background:#FFFDE7}
+.cal-day{font-weight:600;margin-bottom:2px;font-size:12px;color:var(--dk)}
+.cal-cell.other .cal-day{color:#CCC}
+.cal-cell.sun .cal-day{color:#E53935}
+.cal-cell.sat .cal-day{color:var(--sec)}
+.cal-evt{display:block;background:var(--sec);color:var(--wh);font-size:10px;padding:1px 4px;border-radius:3px;margin-bottom:2px;overflow:hidden;cursor:default;line-height:1.4;word-break:break-all}
+.cal-evt.st0{background:var(--acc)}.cal-evt.st1{background:#D4A017}.cal-evt.st2{background:var(--green)}
+.cal-evt:hover{opacity:.85}
+.cal-more{font-size:10px;color:var(--sec);cursor:pointer;font-weight:500}
+.cal-legend{display:flex;gap:16px;justify-content:center;margin-top:8px;font-size:11px;color:var(--gr)}
+.cal-legend span{display:flex;align-items:center;gap:4px}
+.cal-legend i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.cal-cell.in-session{background:#EBF3FB!important}
+.cal-evt.ple{background:#1B3A5C}.cal-evt.com{background:#2E75B6}.cal-evt.aud{background:#D35400}.cal-evt.bud{background:#8E44AD}
+.cal-evt.prS{background:#009688;opacity:.8}.cal-evt.prB{background:#E67E22;opacity:.8}.cal-evt.prQ{background:#3F51B5;opacity:.8}.cal-evt.prA{background:#C0392B;opacity:.8}.cal-evt.prU{background:#9B59B6;opacity:.8}
+.cal-evt.hol{background:#E53935;opacity:.7}
+.cal-evt.cat-research{background:#00897B}.cal-evt.cat-pledge{background:#F57C00}.cal-evt.cat-activity{background:#5C6BC0}
+.cal-bar{height:3px;border-radius:1px;margin:1px 0;padding:0!important}
+.cal-legend2{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:4px;font-size:11px;color:var(--gr)}
+.cal-legend2 span{display:flex;align-items:center;gap:4px}
+.cal-legend2 i{width:10px;height:10px;border-radius:2px;display:inline-block}
+/* Pledge accordion */
+.pledge-view-toggle{display:flex;gap:0;margin-bottom:16px}
+.pledge-view-btn{flex:1;padding:10px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--bd);background:var(--wh);color:var(--gr);transition:all .2s}
+.pledge-view-btn:first-child{border-radius:8px 0 0 8px}
+.pledge-view-btn:last-child{border-radius:0 8px 8px 0}
+.pledge-view-btn.active{background:var(--pri);color:var(--wh);border-color:var(--pri)}
+.acc-group{margin-bottom:8px;border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:var(--wh)}
+.acc-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;transition:background .2s}
+.acc-header:hover{background:var(--lbg2)}
+.acc-header .acc-left{display:flex;align-items:center;gap:8px}
+.acc-header .acc-icon{font-size:18px}
+.acc-header .acc-name{font-size:14px;font-weight:600;color:var(--pri)}
+.acc-header .acc-cnt{font-size:12px;color:var(--gr)}
+.acc-header .acc-right{display:flex;align-items:center;gap:8px}
+.acc-header .acc-ratio{font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px}
+.acc-header .acc-arrow{font-size:14px;color:var(--gr);transition:transform .2s}
+.acc-body{display:none;border-top:1px solid var(--bd);padding:8px 16px}
+.acc-group.open .acc-body{display:block}
+.acc-group.open .acc-arrow{transform:rotate(180deg)}
+.acc-item{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;border-bottom:1px solid #F0F0F0}
+.acc-item:last-child{border-bottom:none}
+.acc-item .acc-st{width:18px;height:18px;border-radius:50%;border:2px solid var(--bd);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s}
+.acc-item .acc-st:hover{transform:scale(1.1)}
+.acc-item .acc-st.s0{border-color:var(--acc);color:transparent}
+.acc-item .acc-st.s1{border-color:var(--amber);background:var(--amber-bg);color:var(--amber)}
+.acc-item .acc-st.s2{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.pledge-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+.sync-ind{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.7);cursor:pointer}
+.sync-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sync-dot.synced{background:#4CAF50}.sync-dot.syncing{background:#FFC107;animation:pulse .8s infinite}.sync-dot.error{background:#F44336}.sync-dot.offline{background:#999}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.small-del{margin-left:auto;color:var(--red);cursor:pointer;font-size:12px;flex-shrink:0;display:none}
+body.edit-mode .small-del{display:inline-block}
+/* Research Links */
+.res-links{margin-top:10px;border-top:1px dashed var(--bd);padding-top:8px}
+.res-links-title{font-size:11px;color:var(--gr);font-weight:600;margin-bottom:6px}
+.res-link-item{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.res-link-item a{font-size:12px;color:var(--sec);text-decoration:none;word-break:break-all;flex:1}
+.res-link-item a:hover{text-decoration:underline}
+.res-link-del{background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;padding:2px 4px;border-radius:4px}
+.res-link-del:hover{background:var(--red-bg)}
+.res-link-add{background:transparent;border:1px dashed var(--sec);color:var(--sec);padding:3px 10px;border-radius:6px;cursor:pointer;font-size:11px;margin-top:4px}
+.res-link-add:hover{background:var(--lbg)}
+/* Policy tasks grid */
+.policy-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.policy-item{background:var(--wh);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;display:flex;align-items:flex-start;gap:8px}
+.policy-item .pid{font-size:10px;font-weight:700;color:var(--wh);background:var(--sec);border-radius:4px;padding:1px 6px;flex-shrink:0;margin-top:2px}
+.policy-item .ptitle{font-size:13px;font-weight:500;color:var(--pri);line-height:1.4}
+.policy-item .pdesc{font-size:11px;color:var(--gr);margin-top:2px}
+/* Issue card */
+.issue-field{margin-top:8px}
+.issue-field-label{font-size:11px;font-weight:600;color:var(--sec);margin-bottom:2px}
+.issue-field-val{font-size:13px;color:#444;padding:4px 0;min-height:20px}
+/* Result type badge */
+.result-type{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;color:var(--wh)}
+/* Empty state */
+.empty-state{text-align:center;padding:40px 20px;color:var(--gr);font-size:14px}
+/* Philosophy quote */
+.philosophy{background:var(--lbg2);border-left:3px solid var(--sec);padding:16px 20px;margin:12px 0 20px;border-radius:0 8px 8px 0}
+.philosophy .main-q{font-size:15px;font-weight:500;color:var(--pri);line-height:1.6}
+.philosophy .sub-q{font-size:13px;color:var(--gr);margin-top:8px}
+@media(max-width:768px){.metric-row{grid-template-columns:repeat(2,1fr)}.content{padding:16px}.tabs{padding:0 16px}.header{padding:16px}.cal-cell{min-height:60px}.pledge-layout{grid-template-columns:1fr}.policy-grid{grid-template-columns:1fr}.top-bar{padding:0 16px}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>이용우 의원 의정지원<span class="period">2026.7 ~ 2028.6</span></h1>
+  <div class="top-right">
+    <div class="sync-ind" id="syncInd" onclick="setupToken()" title="클릭하여 토큰 설정"><span class="sync-dot offline" id="syncDot"></span><span id="syncTxt">오프라인</span></div>
+    <button class="reset-btn" onclick="resetAll()">초기화</button>
+    <label class="edit-toggle"><input type="checkbox" id="editToggle" onchange="toggleEditMode()"><span class="toggle-track"></span>편집</label>
+  </div>
+</div>
+
+<div class="header">
+  <div class="avatar"><img src="photo.png" alt="이용우" onerror="this.remove();this.parentNode.textContent='이'"></div>
+  <div class="header-info">
+    <h2>이용우 의원</h2>
+    <p class="header-sub">더불어민주당 · 부평구라선거구(청천1·2동, 산곡1·2동) · 행정복지위원회</p>
+    <p class="header-msg">주민과 함께 만들어온 경험을 제도와 정책으로 연결하는 생활정치</p>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab(0)">의정현황</div>
+  <div class="tab" onclick="showTab(1)">프로필</div>
+  <div class="tab" onclick="showTab(2)">공약이행</div>
+  <div class="tab" onclick="showTab(3)">의정활동</div>
+  <div class="tab" onclick="showTab(4)">조사·분석</div>
+  <div class="tab" onclick="showTab(5)">일정표</div>
+  <div class="tab" onclick="showTab(6)">지역현안</div>
+  <div class="tab" onclick="showTab(7)">성과</div>
+</div>
+
+<div class="content">
+  <div class="panel active" id="panel-0"></div>
+  <div class="panel" id="panel-1"></div>
+  <div class="panel" id="panel-2"></div>
+  <div class="panel" id="panel-3"></div>
+  <div class="panel" id="panel-4"></div>
+  <div class="panel" id="panel-5"></div>
+  <div class="panel" id="panel-6"></div>
+  <div class="panel" id="panel-7"></div>
+</div>
+
+<script>
+/* ===== CONFIG ===== */
+const STORAGE='lee_yw_v2';
+const GIST_ID='';
+const GIST_FILE='lee_yw_data.json';
+const TOKEN_KEY='gist_token';
+let syncTimer=null;
+function getToken(){return localStorage.getItem(TOKEN_KEY)}
+function setupToken(){const t=prompt('GitHub Personal Access Token을 입력해주세요.\n(기기당 최초 1회만 입력하면 됩니다)\n\n현재 상태: '+(getToken()?'토큰 있음':'토큰 없음'));if(t&&t.trim()){localStorage.setItem(TOKEN_KEY,t.trim());pullFromGist()}else if(t===''){localStorage.removeItem(TOKEN_KEY);setSyncStatus('offline','오프라인')}}
+function setSyncStatus(s,t){const d=document.getElementById('syncDot'),x=document.getElementById('syncTxt');if(!d)return;d.className='sync-dot '+s;x.textContent=t}
+async function pushToGist(){const token=getToken();if(!token||!GIST_ID){setSyncStatus('offline',GIST_ID?'토큰 없음':'Gist 미설정');return}
+  setSyncStatus('syncing','저장 중...');
+  try{const body={};body[GIST_FILE]={content:JSON.stringify({...data,_ts:Date.now()})};
+    const r=await fetch('https://api.github.com/gists/'+GIST_ID,{method:'PATCH',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({files:body})});
+    if(r.ok){setSyncStatus('synced','동기화됨')}else{setSyncStatus('error','동기화 실패')}
+  }catch(e){setSyncStatus('error','연결 오류')}}
+function debouncedPush(){clearTimeout(syncTimer);syncTimer=setTimeout(pushToGist,800)}
+async function pullFromGist(){const token=getToken();if(!token||!GIST_ID){setSyncStatus('offline',GIST_ID?'토큰 없음':'Gist 미설정');return}
+  setSyncStatus('syncing','불러오는 중...');
+  try{const r=await fetch('https://api.github.com/gists/'+GIST_ID,{headers:{'Authorization':'Bearer '+token}});
+    if(!r.ok){setSyncStatus('error','불러오기 실패');return}
+    const g=await r.json();const f=g.files[GIST_FILE];
+    if(!f||f.content==='{"_ts":0}'){setSyncStatus('synced','동기화됨');if(data)debouncedPush();return}
+    const remote=JSON.parse(f.content);const localTs=data._ts||0;const remoteTs=remote._ts||0;
+    if(remoteTs>localTs){delete remote._ts;data=remote;migrateData();
+      localStorage.setItem(STORAGE,JSON.stringify(data));renderAll();setSyncStatus('synced','클라우드에서 불러옴')}
+    else{setSyncStatus('synced','동기화됨');if(localTs>0&&remoteTs<localTs)debouncedPush()}
+  }catch(e){setSyncStatus('error','연결 오류')}}
+
+/* ===== CONSTANTS ===== */
+const statusCycle=['예정','진행중','완료'];
+const statusClass=['badge-plan','badge-prog','badge-done'];
+const catLabels={bill:'조례',budget:'예산·결산',audit:'행정사무감사',speech:'구정질문',fivemin:'5분발언',study:'연구회',visit:'현장방문',townhall:'주민간담회',proposal:'정책제안',research:'정보수집·제도개선'};
+const resultTypes={bill:'조례',budget:'예산',audit:'행정사무감사',speech:'구정질문',citizen:'주민제안',policy:'정책',pledge:'공약'};
+const resultColors={bill:'var(--sec)',budget:'var(--green)',audit:'#D35400',speech:'var(--purple)',citizen:'var(--amber)',policy:'var(--acc)',pledge:'var(--pri)'};
+let editMode=false;
+let pledgeView='field';
+
+/* ===== 선거 공약 (분야별) ===== */
+const ELECTION_FIELD=[
+  {cat:'아이 안심 돌봄',icon:'',color:'#2E75B6',items:['등·하원 도우미 제도 개선','마을 어르신 참여 확대','등·하원 시간 교통안전 규정 마련']},
+  {cat:'청소년 성장 돌봄',icon:'',color:'#0F6E56',items:['꿈나래터·뫼골문화회관·청천도서관·아트센터 연결 프로그램 개선','청소년 자원활동 확대']},
+  {cat:'주민 여가생활 돌봄',icon:'',color:'#D35400',items:['주민센터·신협·새마을금고 문화프로그램 연계','공동체 공모사업 확대']},
+  {cat:'어르신 노후 돌봄',icon:'',color:'#8E44AD',items:['AI 스마트 돌봄 도입','건강 지원 제도 개선','어르신 참여프로그램 확대']},
+  {cat:'청년인턴제도',icon:'',color:'#1B3A5C',items:['참여기간 확대','지역기업·공공·민간기업 참여 확대']},
+  {cat:'군부대 부지 개발',icon:'',color:'#854F0B',items:['1113공병단(청천동) 부지 주민의견 반영','3보급단(산곡동) 부지 주민의견 반영']},
+  {cat:'원적산·장수산',icon:'',color:'#0F6E56',items:['생태환경 보존','주민이용 편의 향상']}
+];
+
+/* ===== 선거 공약 (대상별) ===== */
+const ELECTION_TARGET=[
+  {cat:'아이·가정',icon:'',color:'#1B3A5C',items:['등·하원 도우미 제도 개선','등·하원 시간 교통안전 규정 마련']},
+  {cat:'청소년',icon:'',color:'#2E75B6',items:['활동공간 연결 프로그램 개선','자원활동 확대']},
+  {cat:'주민 전체',icon:'',color:'#D35400',items:['문화프로그램 연계 활성화','공동체 공모사업 확대','마을 어르신 참여 확대']},
+  {cat:'어르신',icon:'',color:'#8E44AD',items:['AI 스마트 돌봄 도입','건강 지원 제도 개선','참여프로그램 확대']},
+  {cat:'청년',icon:'',color:'#0F6E56',items:['인턴제도 참여기간 확대','지역기업·공공·민간기업 참여 확대']}
+];
+
+/* ===== 핵심 의정과제 10개 ===== */
+const POLICY_TASKS=[
+  {id:'T01',title:'부평형 지역사회 통합돌봄 구축',desc:'아이·청소년·어르신 돌봄을 지역사회 안에서 연결'},
+  {id:'T02',title:'아이 안심 등하원 체계',desc:'등하원 도우미, 마을 어르신 참여, 교통안전 제도 개선'},
+  {id:'T03',title:'청소년 지역성장 플랫폼',desc:'꿈나래터·뫼골문화회관·청천도서관·아트센터 연결'},
+  {id:'T04',title:'주민 여가·문화·공동체 생태계',desc:'주민센터·금융기관·도서관과 마을공동체 연결'},
+  {id:'T05',title:'어르신의 지역사회 참여 확대',desc:'AI 스마트 돌봄, 건강지원, 지역사회 참여 확대'},
+  {id:'T06',title:'청년인턴 → 지역일자리 연결',desc:'참여기간 및 지역기업·공공·민간 참여 확대'},
+  {id:'T07',title:'1113공병단 주민참여형 개발',desc:'주민 요구가 반영되는 개발구조 마련'},
+  {id:'T08',title:'3보급단 주민참여형 개발',desc:'이전부지의 주민 활용방안 마련'},
+  {id:'T09',title:'원적산·장수산 보전과 이용의 균형',desc:'생태환경 보존 + 주민 이용편의 개선'},
+  {id:'T10',title:'주민참여형 생활정치 시스템 구축',desc:'현장방문 → 주민의견 → 조사 → 정책 → 성과 선순환'}
+];
+
+/* ===== DEFAULT DATA ===== */
+const DEFAULT={
+activities:[
+  {id:'a1',year:1,cat:'research',title:'행정복지위 소관 현황 파악',date:'2026.7~8월',status:0,tasks:[
+    {text:'행정복지위 소관 부서 업무 현황 파악',status:0},{text:'부평구 통합돌봄 실태조사',status:0},
+    {text:'마을공동체 활동 현황 및 지원체계 분석',status:0},{text:'군부대 부지(1113공병단·3보급단) 개발 계획 확인',status:0}
+  ],preps:[{text:'행정복지위 소관 사업 목록 수집',status:0},{text:'전임 의원 의정활동 성과 파악',status:0}]},
+  {id:'a2',year:1,cat:'speech',title:'구정질문 (돌봄 정책 현황)',date:'2026.9월 제277회',status:0,tasks:[
+    {text:'부평구 통합돌봄 체계 현황 질의',status:0},{text:'아이 등·하원 도우미 제도 운영실태 질의',status:0},
+    {text:'어르신 AI 스마트 돌봄 도입 계획 질의',status:0}
+  ],preps:[{text:'질의서 초안 작성',status:0},{text:'관련 부서 현황자료 수집',status:0}]},
+  {id:'a3',year:1,cat:'budget',title:'2025년도 결산심사',date:'2026.9월 제277회',status:0,tasks:[
+    {text:'행정복지위 소관 결산 자료 분석',status:0},{text:'복지사업 집행률 점검',status:0}
+  ],preps:[]},
+  {id:'a4',year:1,cat:'research',title:'사업계획 보고 점검',date:'2026.10월 제278회',status:0,tasks:[
+    {text:'행정복지 소관 부서 사업계획 검토',status:0},{text:'돌봄 관련 사업 예산 적정성 분석',status:0}
+  ],preps:[]},
+  {id:'a5',year:1,cat:'audit',title:'행정복지위 소관 기관 행정사무감사',date:'2026.11월 제279회',status:0,tasks:[
+    {text:'통합돌봄 사업 운영 실태 감사',status:0},{text:'마을공동체 지원 사업 집행 점검',status:0},
+    {text:'어르신 돌봄 서비스 품질 점검',status:0},{text:'청년인턴제도 운영 실태 감사',status:0}
+  ],preps:[{text:'감사 대상 기관 현황자료 수집',status:0},{text:'질의서 초안 작성',status:0},{text:'현장 방문 계획 수립',status:0}]},
+  {id:'a6',year:1,cat:'speech',title:'구정질문 (돌봄·마을공동체)',date:'2026.11월 제279회',status:0,tasks:[
+    {text:'마을공동체 활성화 방안 질의',status:0},{text:'군부대 부지 개발 주민의견 반영 질의',status:0}
+  ],preps:[]},
+  {id:'a7',year:1,cat:'budget',title:'2027년도 예산심의',date:'2026.12월 제279회',status:0,tasks:[
+    {text:'행정복지위 소관 예산안 심사',status:0},{text:'돌봄 관련 예산 확대 검토',status:0},
+    {text:'마을공동체 지원 예산 적정성 분석',status:0}
+  ],preps:[]},
+  {id:'a8',year:1,cat:'bill',title:'통합돌봄 지원 조례 발의',date:'2027.2~3월',status:0,tasks:[
+    {text:'타 지자체 통합돌봄 조례 입법례 조사',status:0},{text:'상위법 저촉 여부 입법 검토',status:0},
+    {text:'행정복지국 실무진 간담회',status:0},{text:'조례안 초안 작성 및 전문위원실 검토 요청',status:0}
+  ],preps:[{text:'통합돌봄 관련 법적 검토',status:0},{text:'입법예고 및 상임위 안건 제출 준비',status:0}]},
+  {id:'a9',year:1,cat:'fivemin',title:'5분발언 (마을공동체 활성화)',date:'2027.3~4월',status:0,tasks:[],preps:[]},
+  {id:'a10',year:1,cat:'visit',title:'군부대 부지·원적산 현장 점검',date:'2027.5월',status:0,tasks:[
+    {text:'1113공병단(청천동) 부지 현장 방문',status:0},{text:'3보급단(산곡동) 부지 현장 방문',status:0},
+    {text:'원적산·장수산 생태환경 현장 점검',status:0}
+  ],preps:[]},
+  {id:'a11',year:1,cat:'budget',title:'2026년도 결산·추경 심의',date:'2027.6월',status:0,tasks:[],preps:[]},
+  {id:'a12',year:2,cat:'bill',title:'2호 조례 (차후 선정)',date:'2027.11월 정례회',status:0,tasks:[],preps:[]},
+  {id:'a13',year:2,cat:'speech',title:'구정질문',date:'2027.9월',status:0,tasks:[],preps:[]},
+  {id:'a14',year:2,cat:'speech',title:'구정질문',date:'2027.11월 정례회',status:0,tasks:[],preps:[]},
+  {id:'a15',year:2,cat:'audit',title:'2027년 행정사무감사',date:'2027.11월',status:0,tasks:[],preps:[]},
+  {id:'a16',year:2,cat:'budget',title:'2028년도 예산심의',date:'2027.12월',status:0,tasks:[],preps:[]},
+  {id:'a17',year:2,cat:'budget',title:'2027년도 결산심의',date:'2028.6월',status:0,tasks:[],preps:[]},
+],
+research:[
+  {id:'r1',title:'부평형 지역사회 통합돌봄 모델 구축',cat:'research',status:0,tasks:[
+    {text:'아이·청소년·어르신 돌봄 현황 파악',status:0},{text:'돌봄서비스 사각지대 분석',status:0},
+    {text:'타 지자체 통합돌봄 우수사례 벤치마킹',status:0},{text:'부평형 통합돌봄 모델 설계',status:0}
+  ],links:[]},
+  {id:'r2',title:'청천·산곡 아동 등하원 안전체계 개선',cat:'research',status:0,tasks:[
+    {text:'등하원 도우미 제도 운영 실태 파악',status:0},{text:'등하원 시간대 교통안전 현황 조사',status:0},
+    {text:'마을 어르신 참여 방안 검토',status:0},{text:'안전체계 개선 방안 수립',status:0}
+  ],links:[]},
+  {id:'r3',title:'청소년 지역성장 플랫폼 구축방안',cat:'research',status:0,tasks:[
+    {text:'꿈나래터·뫼골문화회관·청천도서관·아트센터 운영 현황',status:0},{text:'청소년 자원활동 현황 조사',status:0},
+    {text:'공간·프로그램 연결 방안 설계',status:0},{text:'청소년 주도 프로그램 개발 방안 검토',status:0}
+  ],links:[]},
+  {id:'r4',title:'부평구 마을공동체 지원체계 개선',cat:'research',status:0,tasks:[
+    {text:'마을공동체 지원 조례 및 사업 현황 분석',status:0},{text:'주민센터·신협·새마을금고 문화프로그램 현황 조사',status:0},
+    {text:'공동체 공모사업 실적 및 개선점 파악',status:0},{text:'타 구 마을공동체 활성화 사례 비교 분석',status:0}
+  ],links:[]},
+  {id:'r5',title:'청년인턴제도 취업연계 효과 분석',cat:'research',status:0,tasks:[
+    {text:'부평구 청년인턴제도 현행 운영 실태 파악',status:0},{text:'참여기간 확대 시 예산 소요 분석',status:0},
+    {text:'지역기업 참여 확대 방안 검토',status:0},{text:'타 기초지자체 청년인턴 우수사례 조사',status:0}
+  ],links:[]},
+  {id:'r6',title:'1113공병단 주민참여형 개발방안',cat:'research',status:0,tasks:[
+    {text:'1113공병단(청천동) 부지 개발 계획 현황 파악',status:0},{text:'주민 의견수렴 절차 및 방법 검토',status:0},
+    {text:'타 지역 군부대 이전 부지 활용 사례 조사',status:0},{text:'주민참여형 개발 모델 설계',status:0}
+  ],links:[]},
+  {id:'r7',title:'3보급단 주민활용 방안',cat:'research',status:0,tasks:[
+    {text:'3보급단(산곡동) 부지 개발 계획 현황 파악',status:0},{text:'주민 요구 및 선호시설 조사',status:0},
+    {text:'부평구 도시계획 연계 분석',status:0},{text:'주민활용 방안 수립',status:0}
+  ],links:[]},
+  {id:'r8',title:'원적산·장수산 생태·이용관리 방안',cat:'research',status:0,tasks:[
+    {text:'원적산 생태환경 현황 및 보존 방안 조사',status:0},{text:'장수산 주민이용 편의시설 현황 파악',status:0},
+    {text:'등산로·산책로 정비 필요사항 점검',status:0},{text:'생태보전과 이용 균형 방안 수립',status:0}
+  ],links:[]},
+],
+pledges:[
+  {id:'p1',title:'통합돌봄 체계 구축',status:0,link:'아이·청소년·어르신 돌봄 일원화, 등·하원 도우미, AI 스마트 돌봄',tasks:[
+    {text:'통합돌봄 지원 조례 제정 추진',status:0},{text:'등·하원 도우미 제도 개선 및 확대',status:0},
+    {text:'어르신 AI 스마트 돌봄 시범사업 추진',status:0},{text:'청소년 활동공간 연결 프로그램 강화',status:0}
+  ]},
+  {id:'p2',title:'마을공동체 활성화 지원',status:0,link:'25년 마을공동체 경험 기반, 주민센터·문화프로그램 연계',tasks:[
+    {text:'주민센터·신협·새마을금고 문화프로그램 연계 추진',status:0},{text:'공동체 공모사업 확대',status:0},
+    {text:'마을 어르신 돌봄 참여 프로그램 개발',status:0}
+  ]},
+  {id:'p3',title:'군부대 부지 주민의견 반영',status:0,link:'1113공병단(청천동)·3보급단(산곡동) 부지 개발',tasks:[
+    {text:'1113공병단 부지 개발 주민의견 수렴 추진',status:0},{text:'3보급단 부지 개발 주민의견 수렴 추진',status:0},
+    {text:'부지 활용 주민설명회·간담회 개최 요구',status:0}
+  ]},
+  {id:'p4',title:'원적산·장수산 환경보존 및 편의향상',status:0,link:'생태환경 보존, 등산로·산책로 정비',tasks:[
+    {text:'원적산 생태환경 보존 방안 마련',status:0},{text:'장수산 주민이용 편의시설 개선',status:0},
+    {text:'등산로·산책로 정비 예산 확보',status:0}
+  ]},
+],
+elecField:Array(16).fill(0),
+elecTarget:Array(12).fill(0),
+schedule:[
+  {id:'s1',date:'2026.7',session:'제276회',cat:'임시회',text:'개원·의장선거, 상임위 구성, 업무보고',status:0},
+  {id:'s2',date:'2026.8',session:'비회기',cat:'의정 준비',text:'행정복지위 소관 현황 파악, 통합돌봄 실태조사',status:0},
+  {id:'s3',date:'2026.9',session:'제277회',cat:'구정질문',text:'행정복지 분야 구정질문 (돌봄 정책 현황)',status:0},
+  {id:'s4',date:'2026.9',session:'제277회',cat:'결산·추경',text:'2025년도 결산 심사, 추경 심의',status:0},
+  {id:'s5',date:'2026.10',session:'제278회',cat:'사업계획보고',text:'행정복지 소관 부서 사업계획 보고',status:0},
+  {id:'s6',date:'2026.10',session:'비회기',cat:'감사 준비',text:'행정사무감사 자료 수집, 질의서 작성',status:0},
+  {id:'s7',date:'2026.11',session:'제279회',cat:'행정사무감사',text:'행정복지위 소관 기관 감사 (9일)',status:0},
+  {id:'s8',date:'2026.11',session:'제279회',cat:'구정질문',text:'돌봄·마을공동체 정책 질의',status:0},
+  {id:'s9',date:'2026.12',session:'제279회',cat:'예산심의',text:'2027년도 예산안 심의',status:0},
+  {id:'s10',date:'2027.2',session:'임시회',cat:'조례안',text:'통합돌봄 지원 조례 발의 준비',status:0},
+  {id:'s11',date:'2027.3',session:'임시회',cat:'5분발언',text:'마을공동체 활성화, 부평구가 선도해야',status:0},
+  {id:'s12',date:'2027.5',session:'비회기',cat:'현장 점검',text:'군부대 부지·원적산·장수산 현장 방문',status:0},
+  {id:'s13',date:'2027.6',session:'정례회',cat:'결산·추경',text:'2026년도 결산, 추경예산안 심의',status:0},
+  {id:'s_div',date:'',session:'',cat:'__divider__',text:'-- 2차년도 --',status:-1},
+  {id:'s14',date:'2027.7',session:'임시회',cat:'업무보고',text:'2차년도 업무보고, 주요 사업 점검',status:0},
+  {id:'s15',date:'2027.9',session:'정례회',cat:'구정질문',text:'돌봄 정책 성과 점검, 군부대 부지 진행상황',status:0},
+  {id:'s16',date:'2027.11',session:'정례회',cat:'행정사무감사',text:'행정복지위 행정사무감사',status:0},
+  {id:'s17',date:'2027.12',session:'정례회',cat:'예산심의',text:'2028년도 예산안 심의',status:0},
+  {id:'s18',date:'2028.6',session:'정례회',cat:'결산·마무리',text:'2027년도 결산, 전반기 의정활동 성과 정리',status:0},
+],
+issues:[
+  {id:'h1',title:'1113공병단',summary:'청천동 부지 주민참여형 개발',status:0,situation:'',resident:'',memo:''},
+  {id:'h2',title:'3보급단',summary:'산곡동 부지 주민활용 방안',status:0,situation:'',resident:'',memo:''},
+  {id:'h3',title:'원적산',summary:'생태환경 보존 및 주민 이용편의 개선',status:0,situation:'',resident:'',memo:''},
+  {id:'h4',title:'장수산',summary:'생태보전과 등산로·산책로 정비',status:0,situation:'',resident:'',memo:''},
+  {id:'h5',title:'청천·산곡 생활SOC',summary:'생활편의시설 확충 및 접근성 개선',status:0,situation:'',resident:'',memo:''},
+  {id:'h6',title:'학교·통학안전',summary:'등하원 안전체계 및 교통안전 확보',status:0,situation:'',resident:'',memo:''},
+  {id:'h7',title:'청소년 활동공간',summary:'꿈나래터·뫼골문화회관 등 연결 활성화',status:0,situation:'',resident:'',memo:''},
+  {id:'h8',title:'주민공동이용시설',summary:'주민센터·복지관 등 운영 효율화',status:0,situation:'',resident:'',memo:''},
+],
+results:[],
+};
+
+/* ===== DATA MANAGEMENT ===== */
+let data;
+function migrateData(){
+  if(!data.elecField) data.elecField=Array(16).fill(0);
+  if(!data.elecTarget) data.elecTarget=Array(12).fill(0);
+  if(!data.issues) data.issues=JSON.parse(JSON.stringify(DEFAULT.issues));
+  if(!data.results) data.results=[];
+  data.activities.forEach(a=>{
+    if(typeof a.body==='string'){const sep=a.body.includes('|')?'|':'\n';a.tasks=a.body.split(sep).filter(s=>s.trim()).map(t=>({text:t.trim(),status:0}));delete a.body}
+    if(!a.tasks) a.tasks=[];
+    if(typeof a.details==='string'){a.preps=a.details.split('|').filter(s=>s.trim()).map(t=>({text:t.trim(),status:0}));delete a.details}
+    if(!a.preps) a.preps=[];
+  });
+  data.pledges.forEach(pl=>{
+    if(typeof pl.body==='string'){pl.tasks=pl.body.split('|').filter(Boolean).map(t=>({text:t,status:0}));delete pl.body}
+    if(!pl.tasks) pl.tasks=[];
+  });
+  if(!data.research) data.research=[];
+  data.research.forEach(r=>{if(!r.tasks)r.tasks=[];if(!r.links)r.links=[]});
+}
+function loadData(){
+  try{const s=localStorage.getItem(STORAGE);data=s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT))}
+  catch(e){data=JSON.parse(JSON.stringify(DEFAULT))}
+  migrateData();
+}
+function saveData(){data._ts=Date.now();localStorage.setItem(STORAGE,JSON.stringify(data));debouncedPush()}
+function resetAll(){if(confirm('모든 편집 내용을 초기 상태로 되돌리시겠습니까?')){localStorage.removeItem(STORAGE);loadData();renderAll()}}
+
+let nextId=1000;
+function genId(){return 'n'+(nextId++)}
+
+/* ===== TAB / EDIT ===== */
+function showTab(n){document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===n));document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===n))}
+function toggleEditMode(){editMode=document.getElementById('editToggle').checked;document.body.classList.toggle('edit-mode',editMode);renderAll()}
+
+/* ===== STATUS ===== */
+function cycleStatus(arr,idx){arr[idx].status=(arr[idx].status+1)%3;saveData();renderAll()}
+function cycleElec(type,idx){if(type==='field'){data.elecField[idx]=(data.elecField[idx]+1)%3}else{data.elecTarget[idx]=(data.elecTarget[idx]+1)%3};saveData();renderAll()}
+
+/* ===== DRAG & DROP (cards) ===== */
+let dragSrc=null,dragArr=null;
+function dragStart(e,arr,idx){dragSrc=idx;dragArr=arr;e.target.closest('.card').classList.add('dragging')}
+function dragEnd(e){document.querySelectorAll('.card').forEach(c=>{c.classList.remove('dragging','drag-over')})}
+function dragOver(e){e.preventDefault();e.target.closest('.card')?.classList.add('drag-over')}
+function dragLeave(e){e.target.closest('.card')?.classList.remove('drag-over')}
+function drop(e,arr,idx){e.preventDefault();if(dragArr!==arr||dragSrc===idx)return;const item=arr.splice(dragSrc,1)[0];arr.splice(idx,0,item);saveData();renderAll()}
+let dragRowSrc=null;
+function rowDragStart(e,idx){dragRowSrc=idx;e.target.closest('tr').style.opacity='.4'}
+function rowDragEnd(e){e.target.closest('tr').style.opacity='1'}
+function rowDragOver(e){e.preventDefault()}
+function rowDrop(e,idx){e.preventDefault();if(dragRowSrc===null||dragRowSrc===idx)return;const item=data.schedule.splice(dragRowSrc,1)[0];data.schedule.splice(idx,0,item);dragRowSrc=null;saveData();renderAll()}
+
+/* ===== INLINE EDIT ===== */
+function makeEditable(text,onSave){const el=document.createElement('span');el.textContent=text;if(editMode){el.contentEditable='true';el.addEventListener('blur',()=>{onSave(el.textContent.trim());saveData()})}return el}
+
+/* ===== DELETE / ADD ===== */
+function deleteItem(arr,idx){if(confirm('이 항목을 삭제하시겠습니까?')){arr.splice(idx,1);saveData();renderAll()}}
+function addActivity(year){data.activities.push({id:genId(),year,cat:'bill',title:'새 항목',date:'시기 입력',status:0,tasks:[],preps:[]});saveData();renderAll();showTab(3)}
+function addPledge(){data.pledges.push({id:genId(),title:'새 공약',status:0,link:'연계 사업 입력',tasks:[{text:'할 일 입력',status:0}]});saveData();renderAll();showTab(2)}
+function cyclePledgeTask(pi,ti){data.pledges[pi].tasks[ti].status=(data.pledges[pi].tasks[ti].status+1)%3;saveData();renderAll()}
+function addPledgeTask(pi){data.pledges[pi].tasks.push({text:'새 할일',status:0});saveData();renderPledges()}
+function deletePledgeTask(pi,ti){if(confirm('삭제하시겠습니까?')){data.pledges[pi].tasks.splice(ti,1);saveData();renderPledges()}}
+function cycleActTask(ai,ti){data.activities[ai].tasks[ti].status=(data.activities[ai].tasks[ti].status+1)%3;saveData();renderAll()}
+function addActTask(ai){data.activities[ai].tasks.push({text:'새 할일',status:0});saveData();renderActivities()}
+function deleteActTask(ai,ti){if(confirm('삭제하시겠습니까?')){data.activities[ai].tasks.splice(ti,1);saveData();renderActivities()}}
+function cycleActPrep(ai,ti){data.activities[ai].preps[ti].status=(data.activities[ai].preps[ti].status+1)%3;saveData();renderAll()}
+function addActPrep(ai){data.activities[ai].preps.push({text:'새 준비사항',status:0});saveData();renderActivities()}
+function deleteActPrep(ai,ti){if(confirm('삭제하시겠습니까?')){data.activities[ai].preps.splice(ti,1);saveData();renderActivities()}}
+function addSchedule(cat){data.schedule.push({id:genId(),date:'시기',session:'회기',cat:cat||'구분',text:'내용 입력',status:0});saveData();renderAll();showTab(5)}
+
+/* ===== RESEARCH ===== */
+function cycleResearchTask(ri,ti){data.research[ri].tasks[ti].status=(data.research[ri].tasks[ti].status+1)%3;saveData();renderResearch()}
+function addResearchTask(ri){data.research[ri].tasks.push({text:'새 조사항목',status:0});saveData();renderResearch()}
+function deleteResearchTask(ri,ti){if(confirm('삭제하시겠습니까?')){data.research[ri].tasks.splice(ti,1);saveData();renderResearch()}}
+function addResearchLink(ri){var title=prompt('자료 제목을 입력하세요');if(!title)return;var url=prompt('URL을 입력하세요');if(!url)return;if(!url.startsWith('http'))url='https://'+url;data.research[ri].links.push({title:title,url:url});saveData();renderResearch()}
+function deleteResearchLink(ri,li){if(confirm('삭제하시겠습니까?')){data.research[ri].links.splice(li,1);saveData();renderResearch()}}
+function addResearchItem(){data.research.push({id:genId(),title:'새 조사 안건',cat:'research',status:0,tasks:[],links:[]});saveData();renderResearch();showTab(4)}
+
+/* ===== ISSUES ===== */
+function addIssue(){data.issues.push({id:genId(),title:'새 현안',summary:'현안 개요 입력',status:0,situation:'',resident:'',memo:''});saveData();renderIssues();showTab(6)}
+function cycleIssueStatus(idx){data.issues[idx].status=(data.issues[idx].status+1)%3;saveData();renderIssues()}
+
+/* ===== RESULTS ===== */
+function addResult(){
+  var title=prompt('성과 제목을 입력하세요');if(!title)return;
+  data.results.push({id:genId(),title:title,date:'',type:'policy',desc:'',pledgeLink:'',status:0});
+  saveData();renderResults();showTab(7);
+}
+function deleteResult(idx){if(confirm('삭제하시겠습니까?')){data.results.splice(idx,1);saveData();renderResults()}}
+function cycleResultType(idx){
+  var types=Object.keys(resultTypes);var cur=types.indexOf(data.results[idx].type);
+  data.results[idx].type=types[(cur+1)%types.length];saveData();renderResults();
+}
+
+/* ===== RENDER HELPERS ===== */
+function escHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function parseDateOrder(dateStr){if(!dateStr)return 99999999;const m=dateStr.match(/(\d{4})\.\s*(\d{1,2})/);if(!m)return 99999999;const y=parseInt(m[1]),mo=parseInt(m[2]);const dm=dateStr.match(/(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})/);const d=dm?parseInt(dm[3]):1;return y*10000+mo*100+d}
+function sortByDate(arr){return [...arr].sort((a,b)=>parseDateOrder(a.date)-parseDateOrder(b.date))}
+function elecStats(){let fd=0,ft=0;data.elecField.forEach(s=>{ft++;if(s===2)fd++});let ad=0,at=0;data.elecTarget.forEach(s=>{at++;if(s===2)ad++});return{fd,ft,ad,at,td:fd+ad,tt:ft+at}}
+
+/* ===== RENDER: DASHBOARD (의정현황) ===== */
+function renderDashboard(){
+  const p=document.getElementById('panel-0');
+  const count=(arr,cf)=>{let d=0,t=0;arr.forEach(i=>{if(typeof cf==='function'?cf(i):true){t++;if(i.status===2)d++}});return{d,t}};
+  const actAll=count(data.activities);
+  const researchItems=count(data.research);
+  const issueItems=count(data.issues);
+  const actStats=(()=>{let d=0,t=0;data.activities.forEach(a=>{(a.tasks||[]).forEach(tk=>{t++;if(tk.status===2)d++});(a.preps||[]).forEach(tk=>{t++;if(tk.status===2)d++})});return{d,t}})();
+  const pct=actStats.t?Math.round(actStats.d/actStats.t*100):0;
+  const researchStats=(()=>{let d=0,t=0;data.research.forEach(r=>r.tasks.forEach(tk=>{t++;if(tk.status===2)d++}));return{d,t}})();
+  const rpct=researchStats.t?Math.round(researchStats.d/researchStats.t*100):0;
+  const es=elecStats();const epct=es.tt?Math.round(es.td/es.tt*100):0;
+  const keyPledges=(()=>{let d=0,t=0;data.pledges.forEach(p=>(p.tasks||[]).forEach(tk=>{t++;if(tk.status===2)d++}));return{d,t}})();
+  const kpct=keyPledges.t?Math.round(keyPledges.d/keyPledges.t*100):0;
+  const sorted=sortByDate(data.activities.filter(a=>a.status<2));
+  const upcoming=sorted.slice(0,1);
+  const nextText=upcoming.length?'<strong>'+escHtml(upcoming[0].date)+'</strong> &mdash; '+escHtml(upcoming[0].title):'모든 활동 완료';
+  const recentResults=data.results.slice(-3).reverse();
+
+  p.innerHTML=`
+    <div class="next-alert"><div class="text">다음 예정: ${nextText}</div></div>
+    <div class="metric-row">
+      <div class="metric"><div class="metric-label">공약</div><div class="metric-val">7<span>개</span></div></div>
+      <div class="metric"><div class="metric-label">핵심 의정과제</div><div class="metric-val">10<span>개</span></div></div>
+      <div class="metric"><div class="metric-label">조사·분석</div><div class="metric-val">${data.research.length}<span>개</span></div></div>
+      <div class="metric"><div class="metric-label">지역현안</div><div class="metric-val">${data.issues.length}<span>개</span></div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      <div class="card"><div class="card-title">의정활동 진행률</div><div class="card-body"><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div><div class="prog-text">${actStats.t}개 항목 중 ${actStats.d}개 완료 (${pct}%)</div></div></div>
+      <div class="card"><div class="card-title">조사·분석 진행률</div><div class="card-body"><div class="prog-bar"><div class="prog-fill" style="width:${rpct}%;background:var(--amber)"></div></div><div class="prog-text">${researchStats.t}개 중 ${researchStats.d}개 완료 (${rpct}%)</div></div></div>
+      <div class="card"><div class="card-title">선거공약 이행률</div><div class="card-body"><div class="prog-bar"><div class="prog-fill" style="width:${epct}%;background:var(--acc)"></div></div><div class="prog-text">${es.tt}개 중 ${es.td}개 완료 (${epct}%)</div></div></div>
+      <div class="card"><div class="card-title">핵심공약 이행률</div><div class="card-body"><div class="prog-bar"><div class="prog-fill" style="width:${kpct}%;background:var(--green)"></div></div><div class="prog-text">${keyPledges.t}개 중 ${keyPledges.d}개 완료 (${kpct}%)</div></div></div>
+    </div>
+    <div class="section-title">핵심 의정과제 10</div>
+    <div class="policy-grid">
+      ${POLICY_TASKS.map(t=>`<div class="policy-item"><span class="pid">${t.id}</span><div><div class="ptitle">${escHtml(t.title)}</div><div class="pdesc">${escHtml(t.desc)}</div></div></div>`).join('')}
+    </div>
+    <div class="section-title">주요 예정 활동</div>
+    ${sorted.slice(0,6).map(a=>`<div class="card" style="padding:12px 20px"><div style="display:flex;align-items:center;justify-content:space-between"><div><span style="font-size:12px;color:var(--sec);font-weight:600">${escHtml(a.date)}</span> <span style="font-size:13px;color:#444;margin-left:8px">${escHtml(a.title)}</span></div><span class="badge ${statusClass[a.status]}" style="cursor:default;font-size:10px">${statusCycle[a.status]}</span></div></div>`).join('')}
+    ${recentResults.length?'<div class="section-title">최근 성과</div>'+recentResults.map(r=>`<div class="card" style="padding:12px 20px"><div style="display:flex;align-items:center;gap:8px"><span class="result-type" style="background:${resultColors[r.type]||'var(--acc)'}">${resultTypes[r.type]||r.type}</span><span style="font-size:13px;font-weight:500;color:var(--pri)">${escHtml(r.title)}</span>${r.date?'<span style="font-size:11px;color:var(--gr);margin-left:auto">'+escHtml(r.date)+'</span>':''}</div></div>`).join(''):''}
+  `;
+}
+
+/* ===== RENDER: PROFILE ===== */
+function renderProfile(){
+  document.getElementById('panel-1').innerHTML=`
+    <div class="section-title">의원 프로필</div>
+    <table class="prof-tbl">
+      <tr><th>성명</th><td>이용우 (李龍雨)</td></tr>
+      <tr><th>소속정당</th><td>더불어민주당</td></tr>
+      <tr><th>선거구</th><td>부평구라선거구 (청천1·2동, 산곡1·2동)</td></tr>
+      <tr><th>당선횟수</th><td>초선 (기호 1-나)</td></tr>
+      <tr><th>상임위원회</th><td>행정복지위원회</td></tr>
+      <tr><th>사무실</th><td>인천광역시 부평구 마장로 363 3층</td></tr>
+    </table>
+    <div class="section-title">의정철학</div>
+    <div class="philosophy">
+      <div class="main-q">마을을 아는 사람이 주민의 문제를 발견하고, 주민과 함께 해결책을 만드는 생활정치.</div>
+      <div class="sub-q">주민의 목소리를 가장 먼저 듣고, 현장에서 답을 찾는 구의원</div>
+    </div>
+    <div class="sub-title">주요 경력</div>
+    <ul class="bl">
+      <li>더불어민주당 부평을 상무위원</li>
+      <li>더불어민주당 부평을 여성위원</li>
+      <li>민주평화통일자문회의 부평구협의회 위원</li>
+      <li>인천 평화의료복지사회적협동조합 대의원</li>
+    </ul>
+    <div class="sub-title" style="margin-top:12px">주요 이력</div>
+    <ul class="bl">
+      <li>전) 여럿이함께하는 동네야놀자 사무국장</li>
+      <li>전) 우리동네희망마을 이사장</li>
+      <li>전) 인천광역시 마을공동체만들기위원회 위원</li>
+      <li>전) 부평구 산곡1동 주민자치회 위원·간사</li>
+      <li>전) 부평구 갈등조정단장·주민조정가</li>
+    </ul>
+    <div class="sub-title">수상</div>
+    <ul class="bl">
+      <li>더불어민주당 당대표 표창 (2025)</li>
+      <li>부평구청장 표창 (2025)</li>
+      <li>인천광역시장 표창 (2020)</li>
+      <li>인천광역시장 표창 (2015)</li>
+    </ul>
+    <div class="sub-title">SNS · 홈페이지</div>
+    <ul class="bl">
+      <li><a href="https://council.icbp.go.kr/member/main?search_code=10008" target="_blank" style="color:var(--sec)">부평구의회 의원 홈페이지</a></li>
+      <li><a href="https://www.instagram.com/leeyw0225/" target="_blank" style="color:var(--sec)">Instagram @leeyw0225</a></li>
+      <li><a href="https://www.facebook.com/people/%EC%9D%B4%EC%9A%A9%EC%9A%B0/pfbid0dunpiZHuGgrP4GYpbnrjpwtjNJu2LLiY2FH17frCuUnX6CLn9YELSkNCCxGs2nKzl/" target="_blank" style="color:var(--sec)">Facebook 이용우</a></li>
+    </ul>
+    <div class="section-title">행정복지위원회 소관 사업 연계 분석</div>
+    <div class="card"><div class="card-title">1. 사회복지 분야</div><div class="card-body"><strong>소관:</strong> 복지정책과, 노인장애인과, 아동보육과<br><strong>연계 공약:</strong> 어르신 노후 돌봄 (AI 스마트 돌봄, 건강지원), 아이 안심 돌봄 (등·하원 도우미)</div></div>
+    <div class="card"><div class="card-title">2. 보건의료 분야</div><div class="card-body"><strong>소관:</strong> 보건소, 건강증진과<br><strong>연계 공약:</strong> 어르신 건강 지원 제도 개선, 통합돌봄 체계 구축</div></div>
+    <div class="card"><div class="card-title">3. 여성·가족 분야</div><div class="card-body"><strong>소관:</strong> 여성가족과, 보육과<br><strong>연계 공약:</strong> 등·하원 도우미 제도, 청소년 성장 돌봄 프로그램</div></div>
+    <div class="card"><div class="card-title">4. 일반행정 분야</div><div class="card-body"><strong>소관:</strong> 행정지원과, 기획예산과<br><strong>연계 공약:</strong> 청년인턴제도 참여기간 확대, 지역기업·공공기관 연계</div></div>
+    <div class="card"><div class="card-title">5. 주민자치 분야</div><div class="card-body"><strong>소관:</strong> 자치행정과, 동 주민센터<br><strong>연계 공약:</strong> 마을공동체 활성화, 주민 여가생활 돌봄, 공동체 공모사업</div></div>
+    <div class="card"><div class="card-title">6. 도시개발·환경 분야</div><div class="card-body"><strong>소관:</strong> 도시계획과, 환경과<br><strong>연계 공약:</strong> 1113공병단·3보급단 부지 주민의견 반영, 원적산·장수산 생태환경 보존</div></div>
+  `;
+}
+
+/* ===== RENDER: PLEDGES (공약이행) ===== */
+let openAccIdx={};
+function toggleAcc(key){openAccIdx[key]=!openAccIdx[key];renderPledges()}
+
+function renderElecAccordion(groups,stateArr,type){
+  let html='',gi=0;
+  groups.forEach(g=>{
+    const startIdx=gi;
+    const done=g.items.reduce((s,_,i)=>s+(stateArr[startIdx+i]===2?1:0),0);
+    const prog=g.items.reduce((s,_,i)=>s+(stateArr[startIdx+i]===1?1:0),0);
+    const total=g.items.length;
+    const key=type+'_'+g.cat;
+    const isOpen=openAccIdx[key];
+    const ratioStyle=done===total?'background:var(--green-bg);color:var(--green)':prog>0?'background:var(--amber-bg);color:var(--amber)':'background:var(--lbg);color:var(--acc)';
+    html+=`<div class="acc-group ${isOpen?'open':''}">
+      <div class="acc-header" onclick="toggleAcc('${key}')">
+        <div class="acc-left"><span class="acc-name">${escHtml(g.cat)}</span><span class="acc-cnt">${total}개</span></div>
+        <div class="acc-right"><span class="acc-ratio" style="${ratioStyle}">${done}/${total}</span><span class="acc-arrow">V</span></div>
+      </div><div class="acc-body">`;
+    g.items.forEach((item,i)=>{
+      const idx=startIdx+i;const st=stateArr[idx];const stIcon=st===2?'V':st===1?'*':'';
+      html+=`<div class="acc-item"><div class="acc-st s${st}" onclick="cycleElec('${type}',${idx})">${stIcon}</div><span style="${st===2?'text-decoration:line-through;color:var(--gr)':''}">${escHtml(item)}</span></div>`;
+    });
+    html+=`</div></div>`;gi+=g.items.length;
+  });
+  return html;
+}
+
+function renderPledges(){
+  const p=document.getElementById('panel-2');
+  let html='<div class="pledge-layout"><div>';
+  html+='<div class="section-title" style="margin-top:0">선거 공약 이행현황</div>';
+  html+=`<div class="pledge-view-toggle">
+    <div class="pledge-view-btn ${pledgeView==='field'?'active':''}" onclick="pledgeView='field';renderPledges()">분야별 보기</div>
+    <div class="pledge-view-btn ${pledgeView==='target'?'active':''}" onclick="pledgeView='target';renderPledges()">대상별 보기</div>
+  </div>`;
+  if(pledgeView==='field'){html+=renderElecAccordion(ELECTION_FIELD,data.elecField,'field')}else{html+=renderElecAccordion(ELECTION_TARGET,data.elecTarget,'target')}
+  html+='</div><div>';
+  html+='<div class="section-title" style="margin-top:0">핵심공약 이행현황</div>';
+  data.pledges.forEach((pl,i)=>{
+    html+=`<div class="card" draggable="${editMode}" ondragstart="dragStart(event,data.pledges,${i})" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event,data.pledges,${i})">
+      <span class="grip" draggable="false">:::</span>
+      <button class="del-btn" onclick="deleteItem(data.pledges,${i})">X</button>
+      <div class="card-title"><span class="badge ${statusClass[pl.status]}" onclick="cycleStatus(data.pledges,${i})">${statusCycle[pl.status]}</span> <span ${editMode?'contenteditable="true" onblur="data.pledges['+i+'].title=this.textContent.trim();saveData()"':''}>${escHtml(pl.title)}</span></div>
+      <div class="card-body"><strong>연계:</strong> <span ${editMode?'contenteditable="true" onblur="data.pledges['+i+'].link=this.textContent.trim();saveData()"':''}>${escHtml(pl.link)}</span>
+        <div style="margin-top:8px">
+        ${(pl.tasks||[]).map((t,ti)=>{const st=t.status;const stIcon=st===2?'V':st===1?'*':'';
+          return `<div class="acc-item"><div class="acc-st s${st}" onclick="cyclePledgeTask(${i},${ti})">${stIcon}</div>
+            <span style="${st===2?'text-decoration:line-through;color:var(--gr)':''}" ${editMode?'contenteditable="true" onblur="data.pledges['+i+'].tasks['+ti+'].text=this.textContent.trim();saveData()"':''}>${escHtml(t.text)}</span>
+            ${editMode?'<span class="small-del" onclick="deletePledgeTask('+i+','+ti+')">X</span>':''}</div>`}).join('')}
+        ${editMode?'<div style="text-align:center;margin-top:4px"><button style="background:transparent;border:1px dashed var(--acc);color:var(--acc);padding:4px 12px;border-radius:6px;cursor:pointer;font-size:12px" onclick="addPledgeTask('+i+')">+ 할일 추가</button></div>':''}
+        </div></div></div>`;
+  });
+  html+='<button class="add-btn" onclick="addPledge()">+ 핵심공약 추가</button></div></div>';
+  p.innerHTML=html;
+}
+
+/* ===== RENDER: ACTIVITIES (의정활동) ===== */
+function renderActivities(){
+  const p=document.getElementById('panel-3');let html='';
+  [1,2].forEach(yr=>{
+    html+=`<div class="section-title">${yr}차년도 (${yr===1?'2026.7 ~ 2027.6':'2027.7 ~ 2028.6'})</div>`;
+    const items=data.activities.filter(a=>a.year===yr);
+    const cats=[...new Set(items.map(a=>a.cat))];
+    cats.forEach(cat=>{
+      html+=`<div class="sub-title">${catLabels[cat]||cat}</div>`;
+      items.filter(a=>a.cat===cat).forEach(a=>{
+        const gIdx=data.activities.indexOf(a);
+        const tasksHtml=(a.tasks||[]).map((t,ti)=>{const st=t.status;const stIcon=st===2?'V':st===1?'*':'';
+          return `<div class="acc-item"><div class="acc-st s${st}" onclick="cycleActTask(${gIdx},${ti})">${stIcon}</div>
+            <span style="${st===2?'text-decoration:line-through;color:var(--gr)':''}" ${editMode?'contenteditable="true" onblur="data.activities['+gIdx+'].tasks['+ti+'].text=this.textContent.trim();saveData()"':''}>${escHtml(t.text)}</span>
+            ${editMode?'<span class="small-del" onclick="deleteActTask('+gIdx+','+ti+')">X</span>':''}</div>`}).join('');
+        const prepsListHtml=(a.preps||[]).map((t,ti)=>{const st=t.status;const stIcon=st===2?'V':st===1?'*':'';
+          return `<div class="acc-item"><div class="acc-st s${st}" onclick="cycleActPrep(${gIdx},${ti})">${stIcon}</div>
+            <span style="${st===2?'text-decoration:line-through;color:var(--gr)':''}" ${editMode?'contenteditable="true" onblur="data.activities['+gIdx+'].preps['+ti+'].text=this.textContent.trim();saveData()"':''}>${escHtml(t.text)}</span>
+            ${editMode?'<span class="small-del" onclick="deleteActPrep('+gIdx+','+ti+')">X</span>':''}</div>`}).join('');
+        const hasPreps=a.preps&&a.preps.length>0;
+        const prepsAddBtn=editMode?'<div style="text-align:center;margin-top:4px"><button style="background:transparent;border:1px dashed var(--acc);color:var(--acc);padding:4px 12px;border-radius:6px;cursor:pointer;font-size:12px" onclick="addActPrep('+gIdx+')">+ 준비사항 추가</button></div>':'';
+        const prepsHtml=(hasPreps||editMode)?'<details style="margin-top:8px"'+(editMode?' open':'')+'><summary style="font-size:12px;color:var(--sec);cursor:pointer;font-weight:500">준비사항 ('+(a.preps?a.preps.length:0)+')</summary>'+prepsListHtml+prepsAddBtn+'</details>':'';
+        html+=`<div class="card" draggable="${editMode}" ondragstart="dragStart(event,data.activities,${gIdx})" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event,data.activities,${gIdx})">
+          <span class="grip" draggable="false">:::</span>
+          <button class="del-btn" onclick="deleteItem(data.activities,${gIdx})">X</button>
+          <div class="card-title"><span class="badge ${statusClass[a.status]}" onclick="cycleStatus(data.activities,${gIdx})">${statusCycle[a.status]}</span> <span ${editMode?'contenteditable="true" onblur="data.activities['+gIdx+'].title=this.textContent.trim();saveData()"':''}>${escHtml(a.title)}</span></div>
+          <div class="card-body"><strong>시기:</strong> <span ${editMode?'contenteditable="true" onblur="data.activities['+gIdx+'].date=this.textContent.trim();saveData()"':''}>${escHtml(a.date)}</span><br>${tasksHtml}${editMode?'<div style="text-align:center;margin-top:4px"><button style="background:transparent;border:1px dashed var(--acc);color:var(--acc);padding:4px 12px;border-radius:6px;cursor:pointer;font-size:12px" onclick="addActTask('+gIdx+')">+ 할일 추가</button></div>':''}${prepsHtml}</div></div>`;
+      });
+    });
+    html+=`<button class="add-btn" onclick="addActivity(${yr})">+ ${yr}차년도 항목 추가</button>`;
+  });
+  p.innerHTML=html;
+}
+
+/* ===== RENDER: RESEARCH (조사·분석) ===== */
+function renderResearch(){
+  const p=document.getElementById('panel-4');
+  let html='<div class="section-title">조사·분석 현황</div>';
+  const totalTasks=data.research.reduce((s,r)=>s+r.tasks.length,0);
+  const doneTasks=data.research.reduce((s,r)=>s+r.tasks.filter(t=>t.status===2).length,0);
+  const pct=totalTasks?Math.round(doneTasks/totalTasks*100):0;
+  html+=`<div class="card" style="margin-bottom:20px"><div class="card-body"><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div><div class="prog-text">전체 ${totalTasks}개 조사항목 중 ${doneTasks}개 완료 (${pct}%)</div></div></div>`;
+  data.research.forEach((r,ri)=>{
+    const done=r.tasks.filter(t=>t.status===2).length;const total=r.tasks.length;
+    html+=`<div class="card" style="border-left:4px solid var(--sec)">
+      <button class="del-btn" onclick="deleteItem(data.research,${ri})">X</button>
+      <div class="card-title"><span class="badge ${statusClass[r.status]}" onclick="cycleStatus(data.research,${ri})">${statusCycle[r.status]}</span>
+        <span ${editMode?'contenteditable="true" onblur="data.research['+ri+'].title=this.textContent.trim();saveData()"':''}>${escHtml(r.title)}</span></div>
+      <div style="font-size:11px;color:var(--gr);margin-bottom:8px">${done}/${total} 완료</div>
+      <div class="card-body">`;
+    r.tasks.forEach((t,ti)=>{const st=t.status;const stIcon=st===2?'V':st===1?'*':'';
+      html+=`<div class="acc-item"><div class="acc-st s${st}" onclick="cycleResearchTask(${ri},${ti})">${stIcon}</div>
+        <span style="${st===2?'text-decoration:line-through;color:var(--gr)':''}" ${editMode?'contenteditable="true" onblur="data.research['+ri+'].tasks['+ti+'].text=this.textContent.trim();saveData()"':''}>${escHtml(t.text)}</span>
+        ${editMode?'<span class="small-del" onclick="deleteResearchTask('+ri+','+ti+')">X</span>':''}</div>`});
+    if(editMode) html+=`<div style="text-align:center;margin-top:4px"><button style="background:transparent;border:1px dashed var(--acc);color:var(--acc);padding:4px 12px;border-radius:6px;cursor:pointer;font-size:12px" onclick="addResearchTask(${ri})">+ 조사항목 추가</button></div>`;
+    if(r.links&&r.links.length>0){
+      html+=`<div class="res-links"><div class="res-links-title">첨부 자료 링크</div>`;
+      r.links.forEach((lnk,li)=>{html+=`<div class="res-link-item"><span style="font-size:11px;color:var(--gr)">·</span><a href="${escHtml(lnk.url)}" target="_blank" rel="noopener">${escHtml(lnk.title)}</a>${editMode?'<button class="res-link-del" onclick="deleteResearchLink('+ri+','+li+')">X</button>':''}</div>`});
+      if(editMode) html+=`<button class="res-link-add" onclick="addResearchLink(${ri})">+ 자료 링크 추가</button>`;
+      html+=`</div>`;
+    } else if(editMode){html+=`<div class="res-links"><button class="res-link-add" onclick="addResearchLink(${ri})">+ 자료 링크 추가</button></div>`}
+    html+=`</div></div>`;
+  });
+  html+=`<button class="add-btn" onclick="addResearchItem()">+ 조사 안건 추가</button>`;
+  p.innerHTML=html;
+}
+
+/* ===== CALENDAR ===== */
+let _now=new Date(),calYear=_now.getFullYear(),calMonth=_now.getMonth()+1;
+if(calYear<2026||(calYear===2026&&calMonth<7)){calYear=2026;calMonth=7}
+if(calYear>2028||(calYear===2028&&calMonth>6)){calYear=2028;calMonth=6}
+function parseSchedDate(d){if(!d)return null;const pp=d.replace(/[년월일]/g,'.').replace(/\s/g,'').split('.').filter(Boolean).map(Number);if(pp.length>=2&&pp[0]>2000)return{y:pp[0],m:pp[1],d:pp[2]||null};return null}
+function calPrev(){calMonth--;if(calMonth<1){calMonth=12;calYear--}if(calYear<2026||(calYear===2026&&calMonth<7)){calYear=2026;calMonth=7}renderSchedule()}
+function calNext(){calMonth++;if(calMonth>12){calMonth=1;calYear++}if(calYear>2028||(calYear===2028&&calMonth>6)){calYear=2028;calMonth=6}renderSchedule()}
+function ymd(y,m,d){return y*10000+m*100+d}
+const SESS=[
+  [20260706,20260721],[20260903,20260918],[20261012,20261023],[20261116,20261211]
+];
+const OVERLAY=[
+  [20260706,20260706,'본회의(개원·의장선거)','ple',1],[20260707,20260709,'상임위 구성','com',1],
+  [20260710,20260711,'업무보고','com',1],[20260714,20260718,'상임위 활동','com',1],[20260721,20260721,'본회의(안건심의)','ple',1],
+  [20260903,20260903,'본회의(개회)','ple',1],[20260904,20260905,'구정질문','ple',1],
+  [20260908,20260912,'상임위(결산·추경)','com',1],[20260915,20260917,'예결위','bud',1],[20260918,20260918,'본회의(안건심의)','ple',1],
+  [20261012,20261012,'본회의(개회)','ple',1],[20261013,20261016,'상임위(사업계획보고)','com',1],
+  [20261019,20261022,'상임위 활동','com',1],[20261023,20261023,'본회의(안건심의)','ple',1],
+  [20261116,20261116,'본회의(개회)','ple',1],[20261117,20261118,'구정질문','ple',1],
+  [20261119,20261127,'행정사무감사','aud',1],[20261130,20261204,'상임위(추경·조례)','com',1],
+  [20261207,20261210,'예결위(예산심사)','bud',1],[20261211,20261211,'본회의(안건의결)','ple',1],
+  [20260815,20260815,'광복절','hol',0],[20260924,20260926,'추석 연휴','hol',0],
+  [20261003,20261003,'개천절','hol',0],[20261009,20261009,'한글날','hol',0],
+  [20261225,20261225,'크리스마스','hol',0],
+  [20270101,20270101,'신정','hol',0],[20270206,20270208,'설날 연휴','hol',0],[20270301,20270301,'삼일절','hol',0],
+  [20270505,20270505,'어린이날','hol',0],[20270513,20270513,'석가탄신일','hol',0],[20270606,20270606,'현충일','hol',0],
+  [20270815,20270815,'광복절','hol',0],[20270914,20270916,'추석 연휴','hol',0],
+  [20271003,20271003,'개천절','hol',0],[20271009,20271009,'한글날','hol',0],[20271225,20271225,'크리스마스','hol',0],
+  [20280101,20280101,'신정','hol',0],[20280126,20280128,'설날 연휴','hol',0],[20280301,20280301,'삼일절','hol',0],
+  [20280502,20280502,'석가탄신일','hol',0],[20280505,20280505,'어린이날','hol',0],[20280606,20280606,'현충일','hol',0],
+  [20260817,20260903,'구정질문 준비','prQ',2],[20261026,20261118,'감사 준비','prA',2],[20261120,20261207,'예산 준비','prU',2],
+];
+
+function renderCalendar(){
+  const first=new Date(calYear,calMonth-1,1);const startDow=first.getDay();const dim=new Date(calYear,calMonth,0).getDate();const prevDays=new Date(calYear,calMonth-1,0).getDate();
+  const today=new Date();const tY=today.getFullYear(),tM=today.getMonth()+1,tD=today.getDate();
+  const mStart=ymd(calYear,calMonth,1),mEnd=ymd(calYear,calMonth,dim);
+  const evts={};const add=(d,text,cls,pri)=>{if(!evts[d])evts[d]=[];evts[d].push({text,cls,pri:pri||5})};
+  OVERLAY.forEach(([s,e,label,cls,pri])=>{if(e<mStart||s>mEnd)return;const ds=s<mStart?1:(s%100),de=e>mEnd?dim:((Math.floor(e/100)%100===calMonth)?e%100:dim);for(let d=ds;d<=de;d++) add(d,d===ds?label:'',cls,pri)});
+  sortByDate(data.schedule.filter(s=>s.cat!=='__divider__')).forEach(s=>{const pd=parseSchedDate(s.date);if(!pd||pd.y!==calYear||pd.m!==calMonth)return;
+    var evCls='st'+s.status;if(s.cat&&s.cat.indexOf('조사')>=0)evCls='cat-research';else if(s.cat&&s.cat.indexOf('공약')>=0)evCls='cat-pledge';else if(s.cat&&s.cat.indexOf('의정')>=0||s.cat&&s.cat.indexOf('활동')>=0)evCls='cat-activity';
+    add(pd.d||1,s.text||s.cat,evCls,5)});
+  function inSess(d){const dn=ymd(calYear,calMonth,d);return SESS.some(([s,e])=>dn>=s&&dn<=e)}
+  let html='<div class="cal-wrap"><div class="cal-nav"><button onclick="calPrev()"><</button><span class="cal-month">'+calYear+'년 '+calMonth+'월</span><button onclick="calNext()">></button></div><div class="cal-grid">';
+  ['일','월','화','수','목','금','토'].forEach((dn,di)=>html+=`<div class="cal-hdr${di===0?' sun':''}${di===6?' sat':''}">${dn}</div>`);
+  for(let i=startDow-1;i>=0;i--) html+=`<div class="cal-cell other"><div class="cal-day">${prevDays-i}</div></div>`;
+  for(let d=1;d<=dim;d++){const dow=(startDow+d-1)%7;let cls='cal-cell';if(calYear===tY&&calMonth===tM&&d===tD)cls+=' today';if(dow===0)cls+=' sun';if(dow===6)cls+=' sat';if(inSess(d))cls+=' in-session';html+=`<div class="${cls}"><div class="cal-day">${d}</div>`;if(evts[d]){const sorted=evts[d].sort((a,b)=>a.pri-b.pri);sorted.slice(0,4).forEach(ev=>{if(ev.text)html+=`<div class="cal-evt ${ev.cls}" title="${escHtml(ev.text)}">${escHtml(ev.text)}</div>`;else html+=`<div class="cal-evt ${ev.cls} cal-bar"></div>`});if(sorted.length>4)html+=`<div class="cal-more">+${sorted.length-4}</div>`}html+='</div>'}
+  const total=startDow+dim,remain=total%7===0?0:7-total%7;for(let i=1;i<=remain;i++)html+=`<div class="cal-cell other"><div class="cal-day">${i}</div></div>`;
+  html+='</div>';
+  html+=`<div class="cal-legend"><span><i style="background:#1B3A5C"></i>본회의</span><span><i style="background:#2E75B6"></i>상임위</span><span><i style="background:#D35400"></i>감사</span><span><i style="background:#8E44AD"></i>예결위</span><span><i style="background:#E53935"></i>공휴일</span></div>`;
+  html+=`<div class="cal-legend2"><span><i style="background:#3F51B5"></i>질문준비</span><span><i style="background:#C0392B"></i>감사준비</span><span><i style="background:#9B59B6"></i>예산준비</span></div>`;
+  html+='</div>';return html;
+}
+
+/* ===== RENDER: SCHEDULE (일정표) ===== */
+function renderSchedule(){
+  const p=document.getElementById('panel-5');let rows='';
+  const dividerIdx=data.schedule.findIndex(s=>s.cat==='__divider__');
+  const divider=dividerIdx>=0?data.schedule[dividerIdx]:null;
+  const nonDiv=data.schedule.filter(s=>s.cat!=='__divider__');
+  const sortedSched=sortByDate(nonDiv);
+  const displaySched=[];let dividerInserted=false;
+  sortedSched.forEach(s=>{if(!dividerInserted&&divider&&parseDateOrder(s.date)>=20270700){displaySched.push(divider);dividerInserted=true}displaySched.push(s)});
+  if(!dividerInserted&&divider) displaySched.push(divider);
+  displaySched.forEach(s=>{
+    const origIdx=data.schedule.indexOf(s);
+    if(s.cat==='__divider__'){rows+=`<tr class="divider-row"><td colspan="${editMode?'7':'5'}">${escHtml(s.text)}</td></tr>`;return}
+    rows+=`<tr draggable="${editMode}" ondragstart="rowDragStart(event,${origIdx})" ondragend="rowDragEnd(event)" ondragover="rowDragOver(event)" ondrop="rowDrop(event,${origIdx})">
+      ${editMode?'<td class="grip-cell" style="display:table-cell">:::</td>':''}
+      <td ${editMode?'contenteditable="true" onblur="data.schedule['+origIdx+'].date=this.textContent.trim();saveData();renderSchedule()"':''}>${escHtml(s.date)}</td>
+      <td ${editMode?'contenteditable="true" onblur="data.schedule['+origIdx+'].session=this.textContent.trim();saveData()"':''}>${escHtml(s.session)}</td>
+      <td ${editMode?'contenteditable="true" onblur="data.schedule['+origIdx+'].cat=this.textContent.trim();saveData()"':''}>${escHtml(s.cat)}</td>
+      <td ${editMode?'contenteditable="true" onblur="data.schedule['+origIdx+'].text=this.textContent.trim();saveData()"':''}>${escHtml(s.text)}</td>
+      <td><span class="badge ${statusClass[s.status]}" onclick="cycleStatus(data.schedule,${origIdx})">${statusCycle[s.status]}</span></td>
+      ${editMode?'<td class="del-cell" style="display:table-cell" onclick="deleteItem(data.schedule,'+origIdx+')">X</td>':''}
+    </tr>`});
+  p.innerHTML=`<div class="section-title">전반기 의정활동 일정표</div>${renderCalendar()}<div class="section-title" style="margin-top:32px">일정 상세 목록</div>
+    <table class="tbl"><thead><tr>${editMode?'<th style="width:40px"></th>':''}<th style="width:80px">시기</th><th style="width:80px">회기</th><th style="width:100px">구분</th><th>주요 내용</th><th style="width:60px">상태</th>${editMode?'<th style="width:40px"></th>':''}</tr></thead><tbody>${rows}</tbody></table>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+      <button class="add-btn" style="flex:1;min-width:120px" onclick="addSchedule('조사·분석')">+ 조사·분석</button>
+      <button class="add-btn" style="flex:1;min-width:120px" onclick="addSchedule('공약 관련')">+ 공약 관련</button>
+      <button class="add-btn" style="flex:1;min-width:120px" onclick="addSchedule('의정활동')">+ 의정활동</button>
+      <button class="add-btn" style="flex:1;min-width:120px" onclick="addSchedule()">+ 기타 일정</button>
+    </div>`;
+}
+
+/* ===== RENDER: ISSUES (지역현안) ===== */
+function renderIssues(){
+  const p=document.getElementById('panel-6');
+  let html='<div class="section-title">지역현안 관리</div>';
+  const done=data.issues.filter(i=>i.status===2).length;
+  html+=`<div class="card" style="margin-bottom:20px"><div class="card-body"><div class="prog-bar"><div class="prog-fill" style="width:${data.issues.length?Math.round(done/data.issues.length*100):0}%;background:#D35400"></div></div><div class="prog-text">${data.issues.length}개 현안 중 ${done}개 해결 (${data.issues.length?Math.round(done/data.issues.length*100):0}%)</div></div></div>`;
+  data.issues.forEach((iss,idx)=>{
+    html+=`<div class="card" style="border-left:4px solid #D35400">
+      <button class="del-btn" onclick="deleteItem(data.issues,${idx})">X</button>
+      <div class="card-title">
+        <span class="badge ${statusClass[iss.status]}" onclick="cycleIssueStatus(${idx})">${statusCycle[iss.status]}</span>
+        <span ${editMode?'contenteditable="true" onblur="data.issues['+idx+'].title=this.textContent.trim();saveData()"':''}>${escHtml(iss.title)}</span>
+      </div>
+      <div style="font-size:12px;color:var(--gr);margin-bottom:8px" ${editMode?'contenteditable="true" onblur="data.issues['+idx+'].summary=this.textContent.trim();saveData()"':''}>${escHtml(iss.summary)}</div>
+      <div class="card-body">`;
+    if(iss.situation||editMode){
+      html+=`<div class="issue-field"><div class="issue-field-label">현재 상황</div><div class="issue-field-val" ${editMode?'contenteditable="true" onblur="data.issues['+idx+'].situation=this.textContent.trim();saveData()"':''}>${escHtml(iss.situation)||'<span style="color:#CCC">'+(editMode?'클릭하여 입력':'')+'</span>'}</div></div>`;
+    }
+    if(iss.resident||editMode){
+      html+=`<div class="issue-field"><div class="issue-field-label">주민 요구</div><div class="issue-field-val" ${editMode?'contenteditable="true" onblur="data.issues['+idx+'].resident=this.textContent.trim();saveData()"':''}>${escHtml(iss.resident)||'<span style="color:#CCC">'+(editMode?'클릭하여 입력':'')+'</span>'}</div></div>`;
+    }
+    if(iss.memo||editMode){
+      html+=`<div class="issue-field"><div class="issue-field-label">메모</div><div class="issue-field-val" ${editMode?'contenteditable="true" onblur="data.issues['+idx+'].memo=this.textContent.trim();saveData()"':''}>${escHtml(iss.memo)||'<span style="color:#CCC">'+(editMode?'클릭하여 입력':'')+'</span>'}</div></div>`;
+    }
+    html+=`</div></div>`;
+  });
+  html+=`<button class="add-btn" onclick="addIssue()">+ 현안 추가</button>`;
+  p.innerHTML=html;
+}
+
+/* ===== RENDER: RESULTS (성과) ===== */
+function renderResults(){
+  const p=document.getElementById('panel-7');
+  let html='<div class="section-title">성과 관리</div>';
+  if(data.results.length===0 && !editMode){
+    html+=`<div class="empty-state">아직 등록된 성과가 없습니다.<br><span style="font-size:12px;color:var(--acc)">편집 모드에서 성과를 추가할 수 있습니다.</span></div>`;
+  } else {
+    const byType={};data.results.forEach(r=>{const t=r.type||'policy';if(!byType[t])byType[t]=[];byType[t].push(r)});
+    /* Summary */
+    if(data.results.length>0){
+      html+=`<div class="metric-row" style="grid-template-columns:repeat(${Math.min(Object.keys(byType).length,4)},1fr);margin-bottom:16px">`;
+      Object.keys(byType).forEach(t=>{
+        html+=`<div class="metric"><div class="metric-label">${resultTypes[t]||t}</div><div class="metric-val">${byType[t].length}<span>건</span></div></div>`;
+      });
+      html+=`</div>`;
+    }
+    data.results.forEach((r,idx)=>{
+      html+=`<div class="card">
+        <button class="del-btn" onclick="deleteResult(${idx})">X</button>
+        <div class="card-title">
+          <span class="result-type" style="background:${resultColors[r.type]||'var(--acc)'};cursor:${editMode?'pointer':'default'}" ${editMode?'onclick="cycleResultType('+idx+')" title="클릭하여 분류 변경"':''}>${resultTypes[r.type]||r.type}</span>
+          <span ${editMode?'contenteditable="true" onblur="data.results['+idx+'].title=this.textContent.trim();saveData()"':''}>${escHtml(r.title)}</span>
+          ${r.date?'<span style="font-size:11px;color:var(--gr);margin-left:auto">'+escHtml(r.date)+'</span>':''}
+        </div>
+        <div class="card-body">
+          ${editMode?'<div style="margin-bottom:4px"><strong>날짜:</strong> <span contenteditable="true" onblur="data.results['+idx+'].date=this.textContent.trim();saveData()">'+escHtml(r.date||'날짜 입력')+'</span></div>':''}
+          <div ${editMode?'contenteditable="true" onblur="data.results['+idx+'].desc=this.textContent.trim();saveData()"':''}>${escHtml(r.desc)||'<span style="color:#CCC">'+(editMode?'성과 내용 입력':'')+'</span>'}</div>
+          ${r.pledgeLink||editMode?'<div style="margin-top:4px;font-size:11px;color:var(--gr)"><strong>관련 공약:</strong> <span '+(editMode?'contenteditable="true" onblur="data.results['+idx+'].pledgeLink=this.textContent.trim();saveData()"':'')+'>'+escHtml(r.pledgeLink||(editMode?'관련 공약 입력':''))+'</span></div>':''}
+        </div>
+      </div>`;
+    });
+  }
+  html+=`<button class="add-btn" onclick="addResult()">+ 성과 추가</button>`;
+  p.innerHTML=html;
+}
+
+/* ===== RENDER ALL ===== */
+function renderAll(){renderDashboard();renderProfile();renderPledges();renderActivities();renderResearch();renderSchedule();renderIssues();renderResults()}
+loadData();renderAll();pullFromGist();
+</script>
+</body>
+</html>
