@@ -206,6 +206,8 @@ body.edit-mode .small-del{display:inline-block}
 .media-qlink{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;background:var(--lbg);color:var(--sec);border-radius:20px;font-size:12px;font-weight:500;text-decoration:none;border:1px solid transparent;transition:all .15s}
 .media-qlink:hover{background:var(--wh);border-color:var(--sec)}
 .media-count{font-size:12px;color:var(--gr);margin:12px 0 8px;font-weight:500}
+.media-more-btn{width:100%;padding:10px;background:var(--lbg);color:var(--sec);border:1px solid var(--bd);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin-top:4px;transition:all .15s}
+.media-more-btn:hover{background:var(--wh);border-color:var(--sec)}
 /* Philosophy quote */
 .philosophy{background:var(--lbg2);border-left:3px solid var(--sec);padding:16px 20px;margin:12px 0 20px;border-radius:0 8px 8px 0}
 .philosophy .main-q{font-size:15px;font-weight:500;color:var(--pri);line-height:1.6}
@@ -658,17 +660,31 @@ async function searchMedia(){
     html='<div class="media-error">검색 결과를 가져오지 못했습니다. 아래 직접 검색 링크를 이용해주세요.</div>';
   }else{
     html+='<div class="media-count">'+allItems.length+'건의 보도자료를 찾았습니다</div>';
-    allItems.forEach(function(item){
+    html+='<div class="media-scroll-box" id="mediaScrollBox">';
+    allItems.forEach(function(item,i){
       var ds=item.date?item.date.toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}):'';
-      html+='<a class="media-result" href="'+escHtml(item.url)+'" target="_blank" rel="noopener">';
+      var hidden=i>=10?' style="display:none" data-media-hidden="1"':'';
+      html+='<a class="media-result"'+hidden+' href="'+escHtml(item.url)+'" target="_blank" rel="noopener">';
       html+='<div class="mr-meta"><span class="mr-badge mr-b-news">보도</span>';
       if(item.source)html+='<span style="font-size:11px;color:var(--gr)">'+escHtml(item.source)+'</span>';
       html+='<span class="mr-date">'+ds+'</span></div>';
       html+='<div class="mr-title">'+escHtml(item.title)+'</div></a>';
     });
+    html+='</div>';
+    if(allItems.length>10){
+      html+='<button class="media-more-btn" id="mediaMoreBtn" onclick="toggleMediaMore()">+ 나머지 '+(allItems.length-10)+'건 더보기</button>';
+    }
   }
   container.innerHTML=html;
   btn.disabled=false;btn.textContent='오늘의 보도현황 조회하기';
+}
+function toggleMediaMore(){
+  var box=document.getElementById('mediaScrollBox');
+  var btn=document.getElementById('mediaMoreBtn');
+  var hidden=box.querySelectorAll('[data-media-hidden]');
+  var isHidden=hidden.length>0&&hidden[0].style.display==='none';
+  hidden.forEach(function(el){el.style.display=isHidden?'block':'none'});
+  btn.textContent=isHidden?'- 접기':'+ 나머지 '+hidden.length+'건 더보기';
 }
 
 /* ===== RENDER: DASHBOARD (의정현황) ===== */
