@@ -188,6 +188,24 @@ body.edit-mode .small-del{display:inline-block}
 .sns-icon{margin-bottom:10px}
 .sns-name{font-size:15px;font-weight:600;margin-bottom:2px}
 .sns-handle{font-size:12px;opacity:.85}
+.media-search-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--sec),var(--acc));color:var(--wh);border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
+.media-search-btn:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 4px 12px rgba(46,117,182,.25)}
+.media-search-btn:disabled{opacity:.6;cursor:wait}
+.media-result{display:block;background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:14px 18px;margin-bottom:8px;text-decoration:none;color:inherit;transition:all .15s;cursor:pointer}
+.media-result:hover{border-color:var(--sec);box-shadow:0 2px 8px rgba(46,117,182,.1);transform:translateY(-1px)}
+.media-result .mr-meta{display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+.media-result .mr-badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600}
+.mr-b-news{background:#FCEBEB;color:var(--red)}
+.media-result .mr-date{font-size:10px;color:var(--gr);margin-left:auto}
+.media-result .mr-title{font-size:13px;font-weight:600;color:var(--pri);line-height:1.5}
+.media-loading{text-align:center;padding:40px 20px;color:var(--gr)}
+.media-loading .spinner{display:inline-block;width:28px;height:28px;border:3px solid var(--bd);border-top-color:var(--sec);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.media-error{text-align:center;padding:20px;color:var(--red);font-size:13px;background:#fef2f2;border-radius:10px;margin-bottom:12px}
+.media-quick-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.media-qlink{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;background:var(--lbg);color:var(--sec);border-radius:20px;font-size:12px;font-weight:500;text-decoration:none;border:1px solid transparent;transition:all .15s}
+.media-qlink:hover{background:var(--wh);border-color:var(--sec)}
+.media-count{font-size:12px;color:var(--gr);margin:12px 0 8px;font-weight:500}
 /* Philosophy quote */
 .philosophy{background:var(--lbg2);border-left:3px solid var(--sec);padding:16px 20px;margin:12px 0 20px;border-radius:0 8px 8px 0}
 .philosophy .main-q{font-size:15px;font-weight:500;color:var(--pri);line-height:1.6}
@@ -555,6 +573,7 @@ function addMediaItem(){
   saveData();renderMedia();showTab(1);
 }
 function deleteMedia(idx){if(confirm('삭제하시겠습니까?')){data.media.splice(idx,1);saveData();renderMedia()}}
+
 function renderMedia(){
   const p=document.getElementById('panel-1');
   let html=`<div class="section-title">SNS · 홈페이지</div>
@@ -575,10 +594,18 @@ function renderMedia(){
         <div class="sns-handle">의원 홈페이지</div>
       </a>
     </div>
-    <div class="section-title">보도자료 · 언론보도</div>`;
-  if(data.media.length===0 && !editMode){
-    html+=`<div class="empty-state">아직 등록된 보도자료가 없습니다.<br><span style="font-size:12px;color:var(--acc)">편집 모드에서 보도자료를 추가할 수 있습니다.</span></div>`;
-  } else {
+    <div class="section-title">보도자료 · 언론보도</div>
+    <button class="media-search-btn" id="mediaSearchBtn" onclick="searchMedia()">오늘의 보도현황 조회하기</button>
+    <div id="mediaResults" style="margin-top:16px"></div>
+    <div style="margin-top:24px"><div class="sub-title">직접 검색 링크</div><div class="media-quick-links">
+      <a class="media-qlink" href="https://council.icbp.go.kr/" target="_blank">부평구의회 보도자료</a>
+      <a class="media-qlink" href="https://search.naver.com/search.naver?where=news&query=%EC%9D%B4%EC%9A%A9%EC%9A%B0+%EB%B6%80%ED%8F%89%EA%B5%AC%EC%9D%98%EC%9B%90&sort=1" target="_blank">네이버 뉴스</a>
+      <a class="media-qlink" href="https://www.google.com/search?q=%EC%9D%B4%EC%9A%A9%EC%9A%B0+%EB%B6%80%ED%8F%89%EA%B5%AC%EC%9D%98%EC%9B%90&tbm=nws&tbs=sbd:1" target="_blank">구글 뉴스</a>
+      <a class="media-qlink" href="https://search.daum.net/search?w=news&q=%EC%9D%B4%EC%9A%A9%EC%9A%B0+%EB%B6%80%ED%8F%89%EA%B5%AC%EC%9D%98%EC%9B%90&sort=recency" target="_blank">다음 뉴스</a>
+      <a class="media-qlink" href="https://www.youtube.com/results?search_query=%EC%9D%B4%EC%9A%A9%EC%9A%B0+%EB%B6%80%ED%8F%89%EA%B5%AC%EC%9D%98%EC%9B%90&sp=CAI%253D" target="_blank">유튜브</a>
+    </div></div>`;
+  if(data.media.length>0||editMode){
+    html+=`<div class="section-title" style="margin-top:24px">수동 등록 보도자료</div>`;
     data.media.forEach((m,idx)=>{
       html+=`<div class="card" style="border-left:4px solid var(--sec)">
         <button class="del-btn" onclick="deleteMedia(${idx})">X</button>
@@ -596,9 +623,52 @@ function renderMedia(){
         </div>
       </div>`;
     });
+    html+=`<button class="add-btn" onclick="addMediaItem()">+ 보도자료 추가</button>`;
+  } else {
+    html+=`<button class="add-btn" style="margin-top:16px" onclick="addMediaItem()">+ 보도자료 수동 추가</button>`;
   }
-  html+=`<button class="add-btn" onclick="addMediaItem()">+ 보도자료 추가</button>`;
   p.innerHTML=html;
+}
+
+async function searchMedia(){
+  var btn=document.getElementById('mediaSearchBtn');
+  var container=document.getElementById('mediaResults');
+  btn.disabled=true;btn.textContent='검색 중...';
+  container.innerHTML='<div class="media-loading"><div class="spinner"></div><div>보도자료를 검색하고 있습니다...</div></div>';
+  var allItems=[];
+  var queries=['이용우+의원','이용우+부평구의원','이용우+부평구의회','부평구의회+행정복지위원회'];
+  for(var qi=0;qi<queries.length;qi++){
+    try{
+      var rssUrl='https://news.google.com/rss/search?q='+encodeURIComponent(queries[qi])+'&hl=ko&gl=KR&ceid=KR:ko';
+      var apiUrl='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rssUrl);
+      var r=await fetch(apiUrl);var d=await r.json();
+      if(d.status==='ok'&&d.items){d.items.forEach(function(item){
+        var dup=allItems.some(function(a){return a.url===item.link});
+        if(dup)return;
+        var pd=item.pubDate?new Date(item.pubDate):null;
+        var src='';var tp=item.title.split(' - ');
+        if(tp.length>1)src=tp.pop().trim();
+        allItems.push({type:'news',title:tp.join(' - ').trim(),source:src,date:pd,url:item.link});
+      })}
+    }catch(e){console.log('News fetch error ('+queries[qi]+'):',e)}
+  }
+  allItems.sort(function(a,b){return (b.date||0)-(a.date||0)});
+  var html='';
+  if(allItems.length===0){
+    html='<div class="media-error">검색 결과를 가져오지 못했습니다. 아래 직접 검색 링크를 이용해주세요.</div>';
+  }else{
+    html+='<div class="media-count">'+allItems.length+'건의 보도자료를 찾았습니다</div>';
+    allItems.forEach(function(item){
+      var ds=item.date?item.date.toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}):'';
+      html+='<a class="media-result" href="'+escHtml(item.url)+'" target="_blank" rel="noopener">';
+      html+='<div class="mr-meta"><span class="mr-badge mr-b-news">보도</span>';
+      if(item.source)html+='<span style="font-size:11px;color:var(--gr)">'+escHtml(item.source)+'</span>';
+      html+='<span class="mr-date">'+ds+'</span></div>';
+      html+='<div class="mr-title">'+escHtml(item.title)+'</div></a>';
+    });
+  }
+  container.innerHTML=html;
+  btn.disabled=false;btn.textContent='오늘의 보도현황 조회하기';
 }
 
 /* ===== RENDER: DASHBOARD (의정현황) ===== */
